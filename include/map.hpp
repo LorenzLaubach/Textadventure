@@ -4,21 +4,8 @@
 #include <map>
 #include "enemies.h"
 #include "printing.h"
+#include "common.h"
 
-struct Position {
-public:
-    int x;
-    int y;
-};
-
-bool operator<(const Position& l, const Position& r) {
-    return (l.x<r.x || (l.x==r.x && l.y<r.y));
-}
-
-struct mapSize {
-    int m_xSize;
-    int m_ySize;
-};
 
 class Map {
 private:
@@ -41,8 +28,13 @@ public:
 
     void spawnEnemies(std::vector<Enemy>& enemies) {
         for (Enemy& enemy : enemies) {
-            Position enemyPosition = Position{randNumbers(0,1), randNumbers(0,1)};
-            this->m_enemiesPosition.insert(pair<Position, Enemy>(enemyPosition, enemy));
+            if (enemy.m_name == "Troll") {
+                while(enemy.m_position.x == 0 && enemy.m_position.y == 0) {
+                    enemy.m_position.x = randNumbers(0, 1);
+                    enemy.m_position.y = randNumbers(0, 1);
+                }
+                this->m_enemiesPosition.insert(pair<Position, Enemy>(enemy.m_position, enemy));
+            }
         }
     }
 };

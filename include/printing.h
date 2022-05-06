@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
 
 //#include "./Player.hpp"
 
@@ -24,8 +25,8 @@ void wait(const int& milliseconds) {
 //template<typename T>
 static void print(const string& textToPrint) {
     cout << "\n";
-    for (int i = 0; i < textToPrint.size(); i++) {
-        std::cout << textToPrint[i];
+    for (char i : textToPrint) {
+        std::cout << i;
         cout.flush();
         wait(50);
     }
@@ -61,11 +62,9 @@ int playerInput(const int& min, const int& max) {
    return input;
 }
 
-
-
-int randNumbers(const int& minimum, const int& maximum) {
-    srand((unsigned) time(nullptr));
-    int randomNumber = minimum + (rand() % maximum);
+int randNumbers(const int& minimum, int maximum) {
+    maximum = maximum - minimum;
+    int randomNumber = minimum + (rand() % (maximum+1));
     return randomNumber;
     }
 

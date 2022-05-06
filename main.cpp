@@ -1,5 +1,5 @@
 #include <iostream>
-#include "./include/Player.hpp"
+#include <Player.hpp>
 #include "./include/enemies.h"
 
 using namespace std;
@@ -19,6 +19,7 @@ void initGame(Player& player, Map& map) {
 }
 
 int main() {
+    srand(time(nullptr));
     Map map = Map(5, 5);
     Player player = Player(map);
     initGame(player, map);

@@ -30,7 +30,7 @@ public:
     m_lastPosition({0,0})
     {
         print("Welcome to FunkyLoLos Textadventure");
-        m_items.emplace_back(Weapon("Axe", 1, 50));
+        m_items.emplace_back(Weapon("Axe", 1, 5));
         m_activeWeapon = &m_items.at(0);
     }
 
@@ -170,7 +170,7 @@ public:
         // Attacking Enemy
         print("Attacking Enemy...");
         enemy.m_life = enemy.m_life - m_activeWeapon->m_damage;
-        print("Attacking with" + m_activeWeapon->m_name);
+        print("Attacking with " + m_activeWeapon->m_name);
         print("...");
         wait(1000);
         print("You dealt " + to_string(m_activeWeapon->m_damage) + " damage");
