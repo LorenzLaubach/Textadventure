@@ -20,4 +20,20 @@ struct mapSize {
     int m_ySize;
 };
 
+int randNumbers(const int& minimum, int maximum) {
+    maximum = maximum - minimum;
+    int randomNumber = minimum + (rand() % (maximum+1));
+    return randomNumber;
+}
+
+Position randPosition(const int& minimum, int maximum) {
+    // Returns a random Position Object which can not be 0
+    Position position{0,0};
+    while(position.x == 0 && position.y == 0) {
+        position.x = randNumbers(minimum, maximum);
+        position.y = randNumbers(minimum, maximum);
+    }
+    return position;
+}
+
 #endif //TEXTADVENTURE_COMMON_H

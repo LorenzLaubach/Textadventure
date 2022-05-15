@@ -15,10 +15,12 @@ public:
 class Weapon : public Object {
 public:
     int m_damage;
-    Weapon(const string& name, const int& weight, const int& damage) {
+    string m_picture;
+    Weapon(const string& name, const int& weight, const int& damage, const string& picture) {
         m_name = name;
         m_damage = damage;
         m_weight = weight;
+        m_picture = picture;
     }
 };
 #endif //UNTITLED_OBJECTS_H

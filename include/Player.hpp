@@ -30,7 +30,7 @@ public:
     m_lastPosition({0,0})
     {
         print("Welcome to FunkyLoLos Textadventure");
-        m_items.emplace_back(Weapon("Axe", 1, 5));
+        m_items.emplace_back(Weapon("Axe", 1, 5, ""));
         m_activeWeapon = &m_items.at(0);
     }
 
@@ -54,31 +54,52 @@ public:
             }
         else {
             print("This was not a valid Input");
-
-            std::chrono::milliseconds timespan(2000);
-            this_thread::sleep_for(timespan);
+            wait(2000);
             print("Du Idiot");
             chooseDirectory();
             }
 
         print("...walking...");
-        std::chrono::milliseconds timespan(1000);
-        this_thread::sleep_for(timespan);
+        wait(1000);
 
-        if (m_map->m_enemiesPosition.find(m_map->m_playerPosition) == m_map->m_enemiesPosition.end()) {
-            // not found
-            print("Nothing to see here. Probably the lazy Creator didn't care for your fun");
-        } else {
-            // found
+        inspectingField();
+    }
+
+    void inspectingField() {
+
+        // Check for Enemies
+        if (m_map->m_fields.at(m_map->m_playerPosition).has_enemy) {
+            // enemy found
             print(
-                    "Yikes there is a" +
-                    m_map->m_enemiesPosition.at(m_map->m_playerPosition).m_name +
-                    "in front of you");
-            cout << m_map->m_enemiesPosition.at(m_map->m_playerPosition).m_picture << endl;
+                    "Yikes there is a " +
+                    m_map->m_fields.at(m_map->m_playerPosition).p_enemy->m_name +
+                    " in front of you");
+            cout << m_map->m_fields.at(m_map->m_playerPosition).p_enemy->m_picture << endl;
 
             print("What do you want to do now?");
-            chooseFightAction(m_map->m_enemiesPosition.at(m_map->m_playerPosition));
+            chooseFightAction(*m_map->m_fields.at(m_map->m_playerPosition).p_enemy);
         }
+        else if(m_map->m_fields.at(m_map->m_playerPosition).has_item) {
+            // item found
+            print("Nice there is a " +
+                  m_map->m_fields.at(m_map->m_playerPosition).p_object->m_name + +
+                          "laying around here"
+            );
+
+            print("Picking up" + m_map->m_fields.at(m_map->m_playerPosition).p_object->m_name + "...");
+            pickupItem(*m_map->m_fields.at(m_map->m_playerPosition).p_object);
+        }
+        else {
+            // not found
+            print("Nothing to see here. Probably the lazy Creator didn't care for your fun");
+        }
+
+        // Check for Items
+
+    }
+
+    void pickupItem(const Weapon& item) {
+        this->m_items.push_back(item);
     }
 
     void chooseFightAction(Enemy& enemy) {
@@ -160,8 +181,9 @@ public:
     }
 
     void showInventory() {
-        for (const Object& item: this->m_items) {
-            print(item.m_name);
+        cout << ("%-20s[%s]\n, Name, Damage") << endl;
+        for (const Weapon& item: this->m_items) {
+            cout << ("%-20s[%s]\n", item.m_name, to_string(item.m_damage)) << endl;
         }
     }
 
@@ -189,7 +211,7 @@ public:
         print("Enemy dealt " + to_string(enemy.m_damage) + " damage");
         if(m_life <= 0) {
             print("You died");
-            m_isPlaying = false;
+            dead();
             goto FightEnd;
         }
         print("Do you want to keep fighting?");

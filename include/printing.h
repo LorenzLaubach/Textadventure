@@ -62,11 +62,7 @@ int playerInput(const int& min, const int& max) {
    return input;
 }
 
-int randNumbers(const int& minimum, int maximum) {
-    maximum = maximum - minimum;
-    int randomNumber = minimum + (rand() % (maximum+1));
-    return randomNumber;
-    }
+
 
 
 #endif //UNTITLED_PRINTING_H

@@ -5,7 +5,7 @@
 #define TEXTADVENTURE_ENEMIES_H
 #include <string>
 #include "common.h"
-#include "../ASCII/troll.h"
+
 
 using namespace std;
 
@@ -15,14 +15,15 @@ public:
     float m_life;
     string m_describtion;
     string m_name;
-    string m_picture = trollASCII;
-    Position m_position;
+    string m_picture;
+    //Position m_position;
 
-    Enemy (const string& name, const int& damage, const float& life) :
+    Enemy (const string& name, const int& damage, const float& life, const string& picture) :
     m_name(name),
     m_damage(damage),
     m_life(life),
-    m_position({0,0})
+    m_picture(picture)
+    //m_position({0,0})
     {
 
     }
