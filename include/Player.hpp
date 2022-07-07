@@ -83,10 +83,10 @@ public:
             // item found
             print("Nice there is a " +
                   m_map->m_fields.at(m_map->m_playerPosition).p_object->m_name + +
-                          "laying around here"
+                          " laying around here"
             );
-
-            print("Picking up" + m_map->m_fields.at(m_map->m_playerPosition).p_object->m_name + "...");
+            cout << m_map->m_fields.at(m_map->m_playerPosition).p_object->m_picture << endl;
+            print("Picking up " + m_map->m_fields.at(m_map->m_playerPosition).p_object->m_name + "...");
             pickupItem(*m_map->m_fields.at(m_map->m_playerPosition).p_object);
         }
         else {
@@ -181,10 +181,22 @@ public:
     }
 
     void showInventory() {
-        cout << ("%-20s[%s]\n, Name, Damage") << endl;
+        cout << "Weapons:" << endl;
+        cout << ("%-20s[%s]\n", "Name", "Damage") << endl;
         for (const Weapon& item: this->m_items) {
             cout << ("%-20s[%s]\n", item.m_name, to_string(item.m_damage)) << endl;
         }
+        print("Do you want to switch Weapons?");
+        printSelection({"Yes", "No"});
+        if (playerInput(1, 2)) {
+            print("Which Weapon would you like to equip?");
+            vector<string> itemNames;
+            for (auto weapon : this->m_items) {
+
+            }
+        }
+
+
     }
 
     void fight(Enemy enemy) {
