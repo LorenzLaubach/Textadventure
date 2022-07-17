@@ -28,7 +28,9 @@ static void print(const string& textToPrint) {
     for (char i : textToPrint) {
         std::cout << i;
         cout.flush();
-        wait(50);
+#ifndef DEBUG
+        wait(25);
+#endif
     }
     cout << "\n";
 }

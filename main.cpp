@@ -17,9 +17,14 @@ void initGame(Player& player, Map& map) {
 
 int main() {
     srand(time(nullptr));
-    Map map = Map(5, 5);
+    Map map = Map(2, 2);
     Player player = Player(map);
+#ifdef DEBUG
+    print("Now running in Debugging Mode");
+    player.setName("Debugger");
+#else
     initGame(player, map);
+#endif
 
     vector<Enemy> enemies;
     Enemy troll = Enemy("Troll", 10, 70, trollASCII);
@@ -32,7 +37,7 @@ int main() {
     map.spawnWeapons(objects);
 
     int round = 0;
-    while(player.m_isPlaying) {
+    while(player.isPlaying) {
         cout << "--------------------------\nRound" + to_string(round++) << endl;
         player.chooseAction();
     }

@@ -31,19 +31,16 @@ private:
 
 public:
     //map<Position, Enemy> m_enemiesPosition;
-    map<Position, Field> m_fields;
-    Position m_playerPosition = Position {0,0};
+    map<Position, Field> fields;
+    Position playerPosition = Position {0, 0};
 
-    Map(int x_size, int y_size) {
-        // Initialize the size of the map
-        m_mapSize.m_xSize = x_size;
-        m_mapSize.m_ySize = y_size;
-
+    Map(int x_size, int y_size) :
+            m_mapSize({x_size - 1,y_size - 1}){
         // Build the map, so we have a Field Object for every possible Position
-        for (int i = 0; i < x_size; i++) {
-            for (int j = 0; j < y_size; j++) {
+        for (int i = 0; i <= x_size; i++) {
+            for (int j = 0; j <= y_size; j++) {
                 Field field;
-                m_fields.insert(pair<Position, Field>({i,j}, field));
+                fields.insert(pair<Position, Field>({i, j}, field));
             }
         }
     }
@@ -52,14 +49,34 @@ public:
         return m_mapSize;
     }
 
-    void spawnEnemies(std::vector<Enemy>& enemies) {
+    void spawnEnemies(std::vector<Enemy>& enemies) { // ToDo the Enemy or Item Class should have a spawn function
         for (Enemy& enemy : enemies) {
             if (enemy.m_name == "Troll") {
+#ifdef DEBUG
+                Position randPosit({1,1});
+#else
                 Position randPosit = randPosition(0,1);
-                this->m_fields.at(randPosit).p_enemy = &enemy;
-                this->m_fields.at(randPosit).has_enemy = true;
+#endif
+                this->fields.at(randPosit).p_enemy = &enemy;
+                this->fields.at(randPosit).has_enemy = true;
             }
         }
+    }
+
+    void showMap() {
+        print("Your current Position is marked with an X");
+        for (int i = 0; i <= m_mapSize.m_xSize; i++) {
+            for (int j = 0; j <= m_mapSize.m_ySize; j++) {
+                if (i == playerPosition.x && j == playerPosition.y){
+                    std::cout << "[X]";
+                }
+                else {
+                    std::cout << "[ ]";
+                }
+            }
+            std::cout << "\n";
+        }
+        std::cout << "\n";
     }
 
     void spawnWeapons(std::vector<Weapon>& weapons) {
@@ -67,10 +84,14 @@ public:
             if (weapon.m_name == "Sword") {
                 bool placable = false;
                 while(!placable) {
+#ifdef DEBUG
+                    Position randPosit = Position( {0,1});
+#else
                     Position randPosit = randPosition(0,1);
-                    if (!m_fields.at(randPosit).has_enemy) {
-                        m_fields.at(randPosit).p_object = &weapon;
-                        m_fields.at(randPosit).has_item = true;
+#endif
+                    if (!fields.at(randPosit).has_enemy) {
+                        fields.at(randPosit).p_object = &weapon;
+                        fields.at(randPosit).has_item = true;
                         placable = true;
                     }
                 }
