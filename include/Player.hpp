@@ -215,7 +215,7 @@ public:
     }}
 
     void switchWeapons() {
-        print("Type in Weapon Name you want to use");
+        print("Type in Weapon Name you want to use or type X to cancel");
         Weapon *currentWeapon = activeWeapon;
         bool switched = false;
         while(!switched) { // Loop will continue until User set valid Input
@@ -230,6 +230,10 @@ public:
             }
             if (switched) {
                 print("Now using " + activeWeapon->m_name);
+            }
+            else if(userWeapon == "x" || userWeapon == "X") {
+                print("Cancelling");
+                break;
             }
             else {
                 print("Your Input didn't match any Weapon you possess or you already use it, try again");
@@ -246,8 +250,8 @@ public:
         print("Attacking with " + activeWeapon->m_name);
         print("...");
         wait(1000);
-        print("You dealt " + to_string(activeWeapon->m_damage) + " damage");
-        print(enemy.m_name + " has " + to_string(enemy.m_life) + " Lifepoints left");
+        print("You dealt " + to_string(activeWeapon->m_damage) + " damage", 2);
+        print(enemy.m_name + " has " + to_string((int)enemy.m_life) + " Lifepoints left");
 
         if(enemy.m_life <= 0) {
             print("Congratulations, the Enemy was defeated");
@@ -263,10 +267,10 @@ public:
         life = life - enemy.m_damage;
         print("...");
         wait(1000);
-        print("Enemy dealt " + to_string(enemy.m_damage) + " damage");
-        print("You have " + to_string(life) + " Lifepoints left");
+        print("Enemy dealt " + to_string(enemy.m_damage) + " damage", 4);
+        print("You have " + to_string((int)life) + " Lifepoints left");
         if(life <= 0) {
-            print("You died");
+            print("You died", 4);
             dead();
             goto FightEnd;
         }

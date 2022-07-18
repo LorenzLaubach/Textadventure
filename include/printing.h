@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <windows.h>
 
 //#include "./Player.hpp"
 
@@ -22,16 +23,25 @@ void wait(const int& milliseconds) {
     this_thread::sleep_for(timespan);
 }
 
-//template<typename T>
-static void print(const string& textToPrint) {
+void changeColour(int colour) {
+    HANDLE hConsole;
+
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, colour);
+}
+
+// Prints out Stuff and can specify colour of printed Text + speed
+static void print(const string& textToPrint, const int& colour=15, const int& speed=25) {
     cout << "\n";
+    changeColour(colour);
     for (char i : textToPrint) {
         std::cout << i;
         cout.flush();
 #ifndef DEBUG
-        wait(25);
+        wait(speed);
 #endif
     }
+    changeColour(15);  // Set Colour back to default white
     cout << "\n";
 }
 
@@ -44,16 +54,6 @@ static void printSelection(const vector<string>& actions) {
     }
 }
 
-static void printActionSelction() {
-    printf("%-20s%-10s\n", "Move", "[0]");
-    printf("%-20s%-10s\n", "Inventory", "[1]");
-    printf("%-20s%-10s\n", "Exit", "[2]");
-}
-
-bool validInput(const int& input, const int& min, const int& max) {
-    return (input<=max && input>=min);
-}
-
 int playerInput(const int& min, const int& max) {
     int input;
     while (std::cout << "\n>"  && !(std::cin >> input) || (input>max || input<min)) {
@@ -63,8 +63,4 @@ int playerInput(const int& min, const int& max) {
     }
    return input;
 }
-
-
-
-
 #endif //UNTITLED_PRINTING_H

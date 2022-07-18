@@ -36,9 +36,11 @@ int main() {
     objects.push_back(sword);
     map.spawnWeapons(objects);
 
-    int round = 0;
+    int round = 1;
     while(player.isPlaying) {
+        changeColour(2);
         cout << "--------------------------\nRound" + to_string(round++) << endl;
+        changeColour(15);
         player.chooseAction();
     }
     return 0;
