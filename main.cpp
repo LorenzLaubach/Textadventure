@@ -17,7 +17,7 @@ void initGame(Player& player, Map& map) {
 
 int main() {
     srand(time(nullptr));
-    Map map = Map(2, 2);
+    Map map = Map(3, 3);
     Player player = Player(map);
 #ifdef DEBUG
     print("Now running in Debugging Mode");
