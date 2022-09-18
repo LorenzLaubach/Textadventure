@@ -6,7 +6,7 @@
 #define TEXTADVENTURE_SWORD_H
 #include "string"
 
-std::string swordASCII = "                           ___\n"
+static std::string swordASCII = "                           ___\n"
                          "                          ( ((\n"
                          "                           ) ))\n"
                          "  .::.                    / /(\n"

@@ -18,12 +18,12 @@
 
 using namespace std;
 
-void wait(const int& milliseconds) {
+inline void wait(const int& milliseconds) {
     std::chrono::milliseconds timespan(milliseconds);
     this_thread::sleep_for(timespan);
 }
 
-void changeColour(int colour) {
+inline void changeColour(int colour) {
     HANDLE hConsole;
 
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -31,7 +31,7 @@ void changeColour(int colour) {
 }
 
 // Prints out Stuff and can specify colour of printed Text + speed
-static void print(const string& textToPrint, const int& colour=15, const int& speed=25) {
+inline static void print(const string& textToPrint, const int& colour=15, const int& speed=25) {
     cout << "\n";
     changeColour(colour);
     for (char i : textToPrint) {
@@ -45,7 +45,7 @@ static void print(const string& textToPrint, const int& colour=15, const int& sp
     cout << "\n";
 }
 
-static void printSelection(const vector<string>& actions) {
+inline static void printSelection(const vector<string>& actions) {
     print("Select one of the following:");
     int i = 1;
     for(const string& action : actions) {
@@ -54,7 +54,7 @@ static void printSelection(const vector<string>& actions) {
     }
 }
 
-int playerInput(const int& min, const int& max) {
+inline int playerInput(const int& min, const int& max) {
     int input;
     while (std::cout << "\n>"  && !(std::cin >> input) || (input>max || input<min)) {
         std::cin.clear(); //clear bad input flag

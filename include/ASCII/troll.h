@@ -6,7 +6,7 @@
 #define TEXTADVENTURE_TROLL_H
 #include <string>
 
-std::string trollASCII = "        .-\"\"\"\".\n"
+static std::string trollASCII = "        .-\"\"\"\".\n"
                     "       /       \\\n"
                     "   __ /   .-.  .\\\n"
                     "  /  `\\  /   \\/  \\\n"
