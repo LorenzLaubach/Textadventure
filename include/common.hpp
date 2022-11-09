@@ -10,6 +10,8 @@ public:
     int y;
 };
 
+static bool debug;
+
 struct spawnBoundaries {
     int xMinSpawn, yMinSpawn, xMaxSpawn, yMaxSpawn;
 };

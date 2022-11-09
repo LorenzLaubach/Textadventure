@@ -1,10 +1,9 @@
 #include <Player.h>
 
 //Constructor
-Player::Player(Map& map, const Weapon initWeapon) :
-m_map(&map),
-m_lastPosition({0,0})
-{
+Player::Player(Map &map, const Weapon initWeapon) :
+        m_map(&map),
+        m_lastPosition({0, 0}) {
     print("Welcome to FunkyLoLos Textadventure");
     m_items.push_back(initWeapon);
     activeWeapon = &m_items.front();
@@ -13,25 +12,21 @@ m_lastPosition({0,0})
     print("Hello there " + m_name);
 }
 
-void Player::setName(const string& name) {
+void Player::setName(const string &name) {
     m_name = name;
 }
 
-void Player::move(const int direction, map<int, string>& directoryMap) {
+void Player::move(const int direction, map<int, string> &directoryMap) {
     m_lastPosition = m_map->playerPosition;
     if (directoryMap[direction] == "East") {
         m_map->playerPosition.x++;
-    }
-    else if (directoryMap[direction] == "South") {
+    } else if (directoryMap[direction] == "South") {
         m_map->playerPosition.y++;
-    }
-    else if (directoryMap[direction] == "West")  {
+    } else if (directoryMap[direction] == "West") {
         m_map->playerPosition.x--;
-    }
-    else if (directoryMap[direction] == "North") {
+    } else if (directoryMap[direction] == "North") {
         m_map->playerPosition.y--;
-    }
-    else {
+    } else {
         print("This was not a valid Input");
         wait(2000);
         print("Du Idiot");
@@ -59,7 +54,7 @@ void Player::inspectingField() {
         chooseFightAction(*m_map->fields.at(m_map->playerPosition).p_enemy);
     }
         // Check for Items
-    else if(m_map->fields.at(m_map->playerPosition).has_item) {
+    else if (m_map->fields.at(m_map->playerPosition).has_item) {
         // item found
         print("Nice there is a " +
               m_map->fields.at(m_map->playerPosition).p_object->m_name + +
@@ -69,22 +64,21 @@ void Player::inspectingField() {
         print("Picking up " + m_map->fields.at(m_map->playerPosition).p_object->m_name + "...");
         pickupItem(*m_map->fields.at(m_map->playerPosition).p_object);
 
-    }
-    else {
+    } else {
         // not found
         print("Nothing to see here. Probably the lazy Creator didn't care for your fun");
     }
 }
 
-void Player::pickupItem(const Weapon& item) {
+void Player::pickupItem(const Weapon &item) {
     m_items.push_back(item);
     m_map->fields.at(m_map->playerPosition).p_object = nullptr;
     m_map->fields.at(m_map->playerPosition).has_item = false;
 }
 
-void Player::chooseFightAction(Enemy& enemy) {
-    printSelection(std::vector<string> {"Fight", "Flee like a Fly", "Inventory"});
-    switch(playerInput(1,3)) {
+void Player::chooseFightAction(Enemy &enemy) {
+    printSelection(std::vector<string>{"Fight", "Flee like a Fly", "Inventory"});
+    switch (playerInput(1, 3)) {
         case 1: {
             fight(enemy);
             break;
@@ -109,8 +103,8 @@ void Player::chooseFightAction(Enemy& enemy) {
 }
 
 void Player::chooseAction() {
-    printSelection(std::vector<string> {"Move", "Inventory", "Exit"});
-    switch (playerInput(1,3)) {
+    printSelection(std::vector<string>{"Move", "Inventory", "Exit"});
+    switch (playerInput(1, 3)) {
         case 1: {
             chooseDirectory();
             break;
@@ -141,7 +135,7 @@ void Player::chooseDirectory() {
         directoryMap.insert(pair<int, string>(i, "East"));
         i++;
     }
-    if(m_map->playerPosition.x > 0) {
+    if (m_map->playerPosition.x > 0) {
         actions.emplace_back("West");
         directoryMap.insert(pair<int, string>(i, "West"));
         i++;
@@ -151,22 +145,22 @@ void Player::chooseDirectory() {
         directoryMap.insert(pair<int, string>(i, "South"));
         i++;
     }
-    if(m_map->playerPosition.y > 0) {
+    if (m_map->playerPosition.y > 0) {
         actions.emplace_back("North");
         directoryMap.insert(pair<int, string>(i, "North"));
         i++;
     }
     printSelection(actions);
-    move(playerInput(1,i), directoryMap);
+    move(playerInput(1, i), directoryMap);
 }
 
 void Player::showInventory() {
     printf("%-20s%s\n", "Weapons:", "Damage:");
-    for (const Weapon& item: m_items) {
+    for (const Weapon &item: m_items) {
         printf("%-20s%s\n", item.m_name.c_str(), to_string(item.m_damage).c_str());
     }
     printSelection({"Switch Weapons", "Use Item", "See Map", "Back"});
-    switch(playerInput(1,4)) {
+    switch (playerInput(1, 4)) {
         case 1: { // Switch Weapons
             switchWeapons();
             break;
@@ -189,16 +183,17 @@ void Player::showInventory() {
             wait(2000);
             print("Du Idiot");
         };
-    }}
+    }
+}
 
 void Player::switchWeapons() {
     print("Type in Weapon Name you want to use or type X to cancel");
     Weapon *currentWeapon = activeWeapon;
     bool switched = false;
-    while(!switched) { // Loop will continue until User set valid Input
+    while (!switched) { // Loop will continue until User set valid Input
         string userWeapon;
         cin >> userWeapon;
-        for (Weapon& weapon : m_items) {
+        for (Weapon &weapon: m_items) {
             if (userWeapon == weapon.m_name && userWeapon != activeWeapon->m_name) {
                 activeWeapon = &weapon;
                 switched = true;
@@ -207,19 +202,17 @@ void Player::switchWeapons() {
         }
         if (switched) {
             print("Now using " + activeWeapon->m_name);
-        }
-        else if(userWeapon == "x" || userWeapon == "X") {
+        } else if (userWeapon == "x" || userWeapon == "X") {
             print("Cancelling");
             break;
-        }
-        else {
+        } else {
             print("Your Input didn't match any Weapon you possess or you already use it, try again");
         }
     }
     // chooseAction();
 }
 
-void Player::fight(Enemy& enemy) {
+void Player::fight(Enemy &enemy) {
 
     // Attacking Enemy
     print("Attacking Enemy...");
@@ -228,9 +221,9 @@ void Player::fight(Enemy& enemy) {
     print("...");
     wait(1000);
     print("You dealt " + to_string(activeWeapon->m_damage) + " damage", 2);
-    print(enemy.m_name + " has " + to_string((int)enemy.m_life) + " Lifepoints left");
+    print(enemy.m_name + " has " + to_string((int) enemy.m_life) + " Lifepoints left");
 
-    if(enemy.m_life <= 0) {
+    if (enemy.m_life <= 0) {
         print("Congratulations, the Enemy was defeated");
         // Remove the Enemy from field as it is defeated;
         m_map->fields.at(m_map->playerPosition).p_enemy = nullptr;
@@ -245,15 +238,15 @@ void Player::fight(Enemy& enemy) {
     print("...");
     wait(1000);
     print("Enemy dealt " + to_string(enemy.m_damage) + " damage", 4);
-    print("You have " + to_string((int)life) + " Lifepoints left");
-    if(life <= 0) {
+    print("You have " + to_string((int) life) + " Lifepoints left");
+    if (life <= 0) {
         print("You died", 4);
         dead();
         goto FightEnd;
     }
     print("Do you want to keep fighting?");
     chooseFightAction(enemy);
-    FightEnd: ;
+    FightEnd:;
 }
 
 void Player::exitGame() {

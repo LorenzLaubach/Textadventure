@@ -8,10 +8,6 @@ Game::Game(const int& x_mapSize,const int& y_mapSize):
         m_player(m_map, Weapon("Axe", 1, 5, "",
                                {0,0,0,0})) {
 
-#ifdef DEBUG
-    print("Now running in Debugging Mode");
-    debug = true;
-#endif
     // Enemy Spawner
     static Enemy troll = Enemy("Troll", 10, 70, trollASCII,
                         spawnBoundaries({0,0,1,1}));

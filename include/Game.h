@@ -17,7 +17,6 @@ private:
     Map m_map;
     Player m_player;
 public:
-    bool debug;
 
     // Constructor
     Game(const int& x_mapSize, const int& y_mapSize);
