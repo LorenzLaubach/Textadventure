@@ -7,20 +7,23 @@
 #include "Player.h"
 #include "map.h"
 #include "objects.h"
-#include "printing.hpp"
-#include "Enemy.h"
+#include "common/printing.hpp"
 #include "ASCII/sword.h"
 #include "ASCII/troll.h"
+
+#include <iostream>
+#include <random>
+#include "common/random_generator.h"
+#include "spawner.h"
 
 class Game {
 private:
     Map m_map;
     Player m_player;
+
 public:
-
-    // Constructor
     Game(const int& x_mapSize, const int& y_mapSize);
-
+    Spawner m_spawner;
     void play();
 
 };

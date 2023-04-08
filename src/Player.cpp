@@ -1,19 +1,27 @@
-#include <Player.h>
+#include "Player.h"
+#include "items/weapon.h"
 
 //Constructor
-Player::Player(Map &map, const Weapon initWeapon) :
+Player::Player(Map &map) :
         m_map(&map),
         m_lastPosition({0, 0}) {
     print("Welcome to FunkyLoLos Textadventure");
-    m_items.push_back(initWeapon);
-    activeWeapon = &m_items.front();
-    print("Enter your Name");
-    cin >> m_name;
-    print("Hello there " + m_name);
+    initWeapon = new Axe();
+    m_weapons.emplace_back(*initWeapon);
+    activeWeapon = initWeapon;
+    if (debug) {
+        print("Enter your Name");
+        cin >> m_name;
+        print("Hello there " + m_name);
+    }
 }
 
 void Player::setName(const string &name) {
     m_name = name;
+}
+
+Field& Player::getPlayerPosition() {
+    return m_map->fields.at(m_map->playerPosition);
 }
 
 void Player::move(const int direction, map<int, string> &directoryMap) {
@@ -41,42 +49,33 @@ void Player::move(const int direction, map<int, string> &directoryMap) {
 
 void Player::inspectingField() {
 
-    // Check for Enemies
-    if (m_map->fields.at(m_map->playerPosition).has_enemy) {
-        // enemy found
-        print(
-                "Yikes there is a " +
-                m_map->fields.at(m_map->playerPosition).p_enemy->m_name +
-                " in front of you");
-        cout << m_map->fields.at(m_map->playerPosition).p_enemy->m_picture << endl;
-
-        print("What do you want to do now?");
-        chooseFightAction(*m_map->fields.at(m_map->playerPosition).p_enemy);
+    Field activeField = getPlayerPosition();
+    
+    if(activeField.has_enemy) {
+        activeField.p_enemy->inspectByPlayer();
+        chooseFightAction(*activeField.p_enemy);
     }
-        // Check for Items
-    else if (m_map->fields.at(m_map->playerPosition).has_item) {
-        // item found
-        print("Nice there is a " +
-              m_map->fields.at(m_map->playerPosition).p_object->m_name + +
-                      " laying around here"
-        );
-        cout << m_map->fields.at(m_map->playerPosition).p_object->m_picture << endl;
-        print("Picking up " + m_map->fields.at(m_map->playerPosition).p_object->m_name + "...");
-        pickupItem(*m_map->fields.at(m_map->playerPosition).p_object);
-
-    } else {
-        // not found
+    else if(activeField.has_item) {
+        activeField.p_object->inspectByPlayer();
+        pickupItem(*activeField.p_object);
+    }
+    else if(activeField.has_riddler) {
+        activeField.p_riddler->inspectByPlayer();
+        solveRiddle(*activeField.p_riddler);
+    }
+    else if(activeField.isFree) {
         print("Nothing to see here. Probably the lazy Creator didn't care for your fun");
     }
 }
 
-void Player::pickupItem(const Weapon &item) {
-    m_items.push_back(item);
+void Player::pickupItem(Weapon& item) {
+    m_weapons.push_back(item);
     m_map->fields.at(m_map->playerPosition).p_object = nullptr;
     m_map->fields.at(m_map->playerPosition).has_item = false;
+    m_map->fields.at(m_map->playerPosition).isFree = false;
 }
 
-void Player::chooseFightAction(Enemy &enemy) {
+void Player::chooseFightAction(Enemy& enemy) {
     printSelection(std::vector<string>{"Fight", "Flee like a Fly", "Inventory"});
     switch (playerInput(1, 3)) {
         case 1: {
@@ -130,7 +129,7 @@ void Player::chooseDirectory() {
     vector<string> actions;
     map<int, string> directoryMap;
     int i = 1;
-    if (m_map->getMapSize().m_xSize > m_map->playerPosition.x) {
+    if (m_map->getMapSize().m_xSize - 1 > m_map->playerPosition.x) {
         actions.emplace_back("East");
         directoryMap.insert(pair<int, string>(i, "East"));
         i++;
@@ -140,7 +139,7 @@ void Player::chooseDirectory() {
         directoryMap.insert(pair<int, string>(i, "West"));
         i++;
     }
-    if (m_map->getMapSize().m_ySize > m_map->playerPosition.y) {
+    if (m_map->getMapSize().m_ySize - 1> m_map->playerPosition.y) {
         actions.emplace_back("South");
         directoryMap.insert(pair<int, string>(i, "South"));
         i++;
@@ -156,7 +155,7 @@ void Player::chooseDirectory() {
 
 void Player::showInventory() {
     printf("%-20s%s\n", "Weapons:", "Damage:");
-    for (const Weapon &item: m_items) {
+    for (const Weapon &item: m_weapons) {
         printf("%-20s%s\n", item.m_name.c_str(), to_string(item.m_damage).c_str());
     }
     printSelection({"Switch Weapons", "Use Item", "See Map", "Back"});
@@ -193,7 +192,7 @@ void Player::switchWeapons() {
     while (!switched) { // Loop will continue until User set valid Input
         string userWeapon;
         cin >> userWeapon;
-        for (Weapon &weapon: m_items) {
+        for (Weapon &weapon: m_weapons) {
             if (userWeapon == weapon.m_name && userWeapon != activeWeapon->m_name) {
                 activeWeapon = &weapon;
                 switched = true;
@@ -209,38 +208,28 @@ void Player::switchWeapons() {
             print("Your Input didn't match any Weapon you possess or you already use it, try again");
         }
     }
-    // chooseAction();
 }
 
-void Player::fight(Enemy &enemy) {
+void Player::fight(Enemy& enemy) {
 
-    // Attacking Enemy
-    print("Attacking Enemy...");
-    enemy.m_life = enemy.m_life - activeWeapon->m_damage;
-    print("Attacking with " + activeWeapon->m_name);
-    print("...");
-    wait(1000);
-    print("You dealt " + to_string(activeWeapon->m_damage) + " damage", 2);
-    print(enemy.m_name + " has " + to_string((int) enemy.m_life) + " Lifepoints left");
+    attackEnemy(enemy);
 
     if (enemy.m_life <= 0) {
+        enemy.defeated(this->m_name);
         print("Congratulations, the Enemy was defeated");
         // Remove the Enemy from field as it is defeated;
         m_map->fields.at(m_map->playerPosition).p_enemy = nullptr;
+        m_map->fields.at(m_map->playerPosition).isFree = true;
         m_map->fields.at(m_map->playerPosition).has_enemy = false;
         goto FightEnd;
     }
 
     wait(2000);
 
-    print("Enemy is attacking you");
-    life = life - enemy.m_damage;
-    print("...");
-    wait(1000);
-    print("Enemy dealt " + to_string(enemy.m_damage) + " damage", 4);
-    print("You have " + to_string((int) life) + " Lifepoints left");
+    enemyAttackingPlayer(enemy);
+
     if (life <= 0) {
-        print("You died", 4);
+        print(this->m_name + " died, what a talentless loser, wait talent doesn't exists", 4);
         dead();
         goto FightEnd;
     }
@@ -249,12 +238,76 @@ void Player::fight(Enemy &enemy) {
     FightEnd:;
 }
 
-void Player::exitGame() {
-    isPlaying = false;
-    print("Leaving the most fun Game ever for whatever reason");
+void Player::attackEnemy(Enemy &enemy) const {
+    print("Attacking Enemy...");
+    float damage = addBonusDamage();
+    enemy.m_life = enemy.m_life - damage;
+    print("Attacking with " + activeWeapon->m_name);
+    print("...");
+    wait(1000);
+    print("You dealt " + to_string((int)damage) + " damage", 2);
+    print(enemy.m_name + " has " + to_string((int) enemy.m_life) + " Lifepoints left");
+}
+
+float Player::addBonusDamage() const {
+    if(getRandomNumber(1, whatAreTheOdds) == whatAreTheOdds) {
+        std::cout << "******* Critical Hit *******" << std::endl;
+        return (float)activeWeapon->m_damage*m_criticalHit;
+    }
+    else {
+        return (float)activeWeapon->m_damage;
+    }
+}
+
+void Player::enemyAttackingPlayer(Enemy& enemy) {
+    print("Enemy is attacking you");
+    life = life - getPlayerPosition().p_enemy->m_damage;
+    print("...");
+    wait(1000);
+    print("Enemy dealt " + to_string((int)enemy.m_damage) + " damage", 4);
+    print("You have " + to_string((int) life) + " Lifepoints left");
+}
+
+void Player::increaseExperience(const int xp) { //TODO implement it after fighting
+    m_experience+=xp;
+}
+
+void Player::solveRiddle(Riddler &riddler) {
+    if (riddler.askRiddle()) {
+        print("Astonishing that was right. Usually you are more of a schnook" + m_name +
+        ". Here is a little reward for you:");
+        increaseCritChance(1);
+    }
+    else {
+        print("This was wrong as expected you little dopey. Lets see if we see again");
+        wait(700);
+        print("See ya");
+        m_map->fields.at(m_map->playerPosition).p_riddler = nullptr; // prob deprecated
+        m_map->fields.at(m_map->playerPosition).isFree = true;
+        m_map->fields.at(m_map->playerPosition).has_riddler = false;
+        riddler.setSpawnPosition();
+        m_map->fields.at(riddler.m_spawnPosition).p_riddler = &riddler; // prob deprecated
+        m_map->fields.at(riddler.m_spawnPosition).isFree = false;
+        m_map->fields.at(riddler.m_spawnPosition).has_riddler = true;
+    }
+}
+
+void Player::increaseCritChance(const int& incr) {
+    this->whatAreTheOdds = this->whatAreTheOdds - incr;
+    string critChance = to_string((1/whatAreTheOdds)*100);
+    print("Looks like your Critical Hit Chance is now " + critChance + "%");
 }
 
 void Player::dead() {
     print("Game Over");
     isPlaying = false;
+}
+
+void Player::exitGame() {
+    isPlaying = false;
+    print("Leaving the most fun Game ever for whatever reason");
+}
+
+Player::~Player() {
+    delete initWeapon;
 }

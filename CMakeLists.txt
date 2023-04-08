@@ -1,33 +1,21 @@
 cmake_minimum_required(VERSION 3.16)
 project(Textadventure)
 
-
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
-# Create Library of the source files
-add_library(adventureLib
-        src/Enemy.cpp
-#        include/Enemy.h
+add_executable(${PROJECT_NAME}
+        main.cpp
         src/Game.cpp
-#        include/Game.h
         src/map.cpp
-#        include/map.h
         src/Player.cpp
-#        include/Player.h
-        include/common.hpp
-        include/printing.hpp
+        include/common/random_generator.h
+        include/items/item.h
         )
 
-# Executable of main
-add_executable(${PROJECT_NAME} main.cpp)
+target_include_directories(${PROJECT_NAME} PUBLIC
+        include)
 
-# link the library to the executable
-target_link_libraries(${PROJECT_NAME} adventureLib)
-
-# link headers to the library
-target_include_directories(adventureLib PUBLIC include)
-
-#target_include_directories(${PROJECT_NAME} PRIVATE include)
+add_subdirectory(test)
 

@@ -1,7 +1,3 @@
-//
-// Created by lorenz on 24.04.22.
-//
-
 #ifndef TEXTADVENTURE_TROLL_H
 #define TEXTADVENTURE_TROLL_H
 #include <string>

@@ -14,8 +14,6 @@
 #include <vector>
 #include <windows.h>
 
-//#include "./Player.hpp"
-
 using namespace std;
 
 inline void wait(const int& milliseconds) {
@@ -62,5 +60,15 @@ inline int playerInput(const int& min, const int& max) {
         std::cout << "Invalid input; please re-enter.\n";
     }
    return input;
+}
+
+inline std::string playerInput() {
+    std::string input;
+    while (std::cout << "\n>"  && !(std::cin >> input)) {
+        std::cin.clear(); //clear bad input flag
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //discard input
+        std::cout << "Invalid input; please re-enter.\n";
+    }
+    return input;
 }
 #endif //UNTITLED_PRINTING_H
